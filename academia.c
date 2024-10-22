@@ -15,17 +15,17 @@ typedef struct {
     char email[50];
 } DadosPessoais;
 
-// Estrutura para informações de saúde
+// Estrutura para informaes de sade
 typedef struct {
     float peso;
     float altura;
     float imc;
     char exames[200];
     char condicoes_medicas[200];
-    char treino[200];
+    char treino[500];
 } Saude;
 
-// Estrutura para informações de pagamento
+// Estrutura para informaes de pagamento
 typedef struct {
     char tipo_plano[20];
     char data_inicial[11];
@@ -40,12 +40,12 @@ typedef struct Aluno {
     struct Aluno *prox;
 } Aluno;
 
-// Função para calcular IMC
+// Funo para calcular IMC
 float calcular_imc(float peso, float altura) {
     return peso / (altura * altura);
 }
 
-// Função para determinar a situação do IMC
+// Funo para determinar a situao do IMC
 const char* situacao_imc(float imc) {
     if (imc > 40) return "Obesidade grau III";
     if (imc >= 35) return "Obesidade grau II";
@@ -55,7 +55,7 @@ const char* situacao_imc(float imc) {
     return "Abaixo do normal";
 }
 
-// Função para cadastrar um aluno
+// Funo para cadastrar um aluno
 Aluno* cadastrar_aluno(Aluno *lista) {
     Aluno *novo = (Aluno*) malloc(sizeof(Aluno));
     if (!novo) {
@@ -63,7 +63,7 @@ Aluno* cadastrar_aluno(Aluno *lista) {
         return lista;
     }
 
-    // Informações pessoais
+    // Informaes pessoais
     printf("Nome: ");
     fgets(novo->dados_pessoais.nome, 50, stdin);
     novo->dados_pessoais.nome[strcspn(novo->dados_pessoais.nome, "\n")] = '\0'; // Remover o '\n' do final
@@ -100,7 +100,7 @@ Aluno* cadastrar_aluno(Aluno *lista) {
     novo->dados_pessoais.email[strcspn(novo->dados_pessoais.email, "\n")] = '\0'; // Remover o '\n' do final
     fflush(stdin); // Limpar o buffer
 
-    // Informações de saúde
+    // Informaes de sade
     printf("Peso (kg): ");
     scanf("%f", &novo->saude.peso);
     fflush(stdin); // Limpar o buffer
@@ -121,7 +121,7 @@ Aluno* cadastrar_aluno(Aluno *lista) {
     novo->saude.condicoes_medicas[strcspn(novo->saude.condicoes_medicas, "\n")] = '\0'; // Remover o '\n' do final
     fflush(stdin); // Limpar o buffer
 
-     // Informações de pagamento
+     // Informaes de pagamento
     printf("Tipo de plano (Anual/Trimestral/Mensal): ");
     fgets(novo->pagamento.tipo_plano, 20, stdin);
     novo->pagamento.tipo_plano[strcspn(novo->pagamento.tipo_plano, "\n")] = '\0'; // Remover o '\n' do final
@@ -139,29 +139,27 @@ Aluno* cadastrar_aluno(Aluno *lista) {
     // Converter a data inicial manualmente
     sscanf(novo->pagamento.data_inicial, "%d/%d/%d", &dia, &mes, &ano);
     data_inicial.tm_mday = dia;
-    data_inicial.tm_mon = mes - 1; // Ajusta o mês para 0-11
+    data_inicial.tm_mon = mes - 1; // Ajusta o ms para 0-11
     data_inicial.tm_year = ano - 1900; // Ajusta o ano para o formato da struct tm
 
     if (strcmp(novo->pagamento.tipo_plano, "Anual") == 0) {
         data_inicial.tm_year += 1; // Adiciona um ano
     } else if (strcmp(novo->pagamento.tipo_plano, "Trimestral") == 0) {
-        data_inicial.tm_mon += 3; // Adiciona três meses
+        data_inicial.tm_mon += 3; // Adiciona trs meses
     } else if (strcmp(novo->pagamento.tipo_plano, "Mensal") == 0) {
-        data_inicial.tm_mon += 1; // Adiciona um mês
+        data_inicial.tm_mon += 1; // Adiciona um ms
     }
 
     mktime(&data_inicial); // Normaliza a estrutura tm
 
     strftime(novo->pagamento.data_final, sizeof(novo->pagamento.data_final), "%d/%m/%Y", &data_inicial); // Formata a data final
 
-    system("cls");
-
-    // Adicionar à lista
+    // Adicionar  lista
     novo->prox = lista;
     return novo;
 }
 
-// Função para exibir informações do aluno
+// Funo para exibir informaes do aluno
 void checar_ficha(Aluno *lista) {
     char cpf[15];
     printf("Informe o CPF do aluno: ");
@@ -186,11 +184,12 @@ void checar_ficha(Aluno *lista) {
             printf("Altura: %.2f m\n", atual->saude.altura);
             printf("IMC: %.2f (%s)\n", atual->saude.imc, situacao_imc(atual->saude.imc));
             printf("Exames: %s\n", atual->saude.exames);
-            printf("Condições médicas: %s\n", atual->saude.condicoes_medicas);
+            printf("Condiçõees médicas: %s\n", atual->saude.condicoes_medicas);
             printf("\n| Pagamento |\n");
             printf("Tipo de plano: %s\n", atual->pagamento.tipo_plano);
             printf("Data de início: %s\n", atual->pagamento.data_inicial);
-            printf("Data final: %s\n", atual->pagamento.data_final); // Certifique-se de preencher isso na matrícula
+            printf("Data final: %s\n", atual->pagamento.data_final); // Certifique-se de preencher isso na Matricular
+            printf("Treino: %s\n", atual->saude.treino);
             return;
         }
         atual = atual->prox;
@@ -198,7 +197,7 @@ void checar_ficha(Aluno *lista) {
     printf("Aluno não encontrado.\n");
 }
 
-// Função para remover matrícula
+// Funo para remover Matricular
 Aluno* remover_aluno(Aluno *lista) {
     char cpf[15];
     printf("Informe o CPF do aluno a ser removido: ");
@@ -223,22 +222,177 @@ Aluno* remover_aluno(Aluno *lista) {
     return lista;
 }
 
-// Função para exibir o menu de opções
+
+// Funo para atualizar treino
+void atualizar_treino(Aluno *lista) {
+    char cpf[15];
+    char nivel[20];
+    char categoria[20];
+    Aluno *atual = lista;
+
+    printf("Informe o CPF do aluno: ");
+    fflush(stdin); // Limpar o buffer
+    fgets(cpf, 15, stdin);
+    cpf[strcspn(cpf, "\n")] = '\0'; // Remover o '\n' do final
+
+    fflush(stdin); // Limpar o buffer
+
+    while (atual != NULL) {
+        if (strcmp(atual->dados_pessoais.cpf, cpf) == 0) {
+            // Pede as informaes do treino
+            printf("Escolha o nível de treino (Iniciante/Intermediario/Avancado): ");
+            fflush(stdin); // Limpar o buffer
+            fgets(nivel, 20, stdin);
+            nivel[strcspn(nivel, "\n")] = '\0'; // Remover o '\n' do final
+
+            printf("Escolha a categoria (Jovem/Adulto/Idoso/Comorbidade): ");
+            fflush(stdin); // Limpar o buffer
+            fgets(categoria, 20, stdin);
+            categoria[strcspn(categoria, "\n")] = '\0'; // Remover o '\n' do final
+
+            // Atribuindo o treino de acordo com as informaes
+            if (strcmp(nivel, "Iniciante") == 0) {
+                if (strcmp(categoria, "Jovem") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Iniciante_Jovem:\n1. Aquecimento: 5-10 minutos de caminhada ou bicicleta\n2. Agachamento livre: 3x12\n3. Supino com halteres: 3x10\n4. Remada sentada: 3x12\n5. Prancha: 3x20 segundos\n6. Aeróbico: 10-15 minutos de caminhada ou elíptico\n7. Alongamento: pernas, braços\n");
+                } else if (strcmp(categoria, "Idoso") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Iniciante_Idoso:\n1. Aquecimento: 5-10 minutos de caminhada leve\n2. Leg press com pouco peso: 3x10\n3. Desenvolvimento com halteres sentado: 3x8\n4. Remada na polia baixa: 3x10\n5. Elevações de calcanhares: 3x15\n6. Aeróbico: 10 minutos de bicicleta em ritmo leve\n7. Alongamento: flexibilidade de quadris e ombros\n");
+                } else if (strcmp(categoria, "Comorbidade") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Iniciante_Comorbidades:\n1. Aquecimento: 10 minutos de caminhada leve\n2. Leg press com pouca carga: 3x10\n3. Flexo na parede: 3x8\n4. Pulldown na polia: 3x10\n5. Prancha modificada: 3x15 segundos\n6. Aeróbico: 10 minutos de bicicleta moderada\n7. Alongamento: parte inferior das costas e pernas\n");
+                }
+            } else if (strcmp(nivel, "Intermediario") == 0) {
+                if (strcmp(categoria, "Jovem") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Intermediario_Jovem:\n1. Aquecimento: 10 minutos de bicicleta\n2. Agachamento com barra: 4x10\n3. Supino reto: 4x8\n4. Remada curvada: 4x10\n5. Desenvolvimento com halteres: 3x12\n6. Aeróbico: 20 minutos de HIIT\n7. Alongamento: grupos musculares trabalhados\n");
+                } else if (strcmp(categoria, "Idoso") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Intermediario_Idoso:\n1. Aquecimento: 10 minutos de bicicleta ou elíptico\n2. Leg press: 4x8-10\n3. Supino com halteres inclinado: 3x8\n4. Remada máquina: 3x10\n5. Rosca direta com halteres: 3x12\n6. Aeróbico: 15 minutos de bicicleta\n7. Alongamento: quadris e ombros\n");
+                } else if (strcmp(categoria, "Comorbidade") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Intermediario_Comorbidades:\n1. Aquecimento: 10 minutos de caminhada\n2. Agachamento na máquina: 3x12\n3. Supino com halteres: 3x8\n4. Pulldown: 3x10\n5. Prancha modificada: 3x15 segundos\n6. Aeróbico: 20 minutos de caminhada ou bicicleta em ritmo moderado\n7. Alongamento: articulações e membros superiores\n");
+                }
+            } else if (strcmp(nivel, "Avancado") == 0) {
+                if (strcmp(categoria, "Jovem") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Avançado_Jovem:\n1. Aquecimento: 10 minutos de elíptico\n2. Agachamento livre pesado: 5x6-8\n3. Supino com barra: 4x6-8\n4. Levantamento terra: 4x6-8\n5. Desenvolvimento militar: 4x8-10\n6. Aeróbico: 20 minutos de HIIT\n7. Alongamento: todos os grupos musculares\n");
+                } else if (strcmp(categoria, "Idoso") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Avançado_Idoso:\n1. Aquecimento: 10 minutos de bicicleta\n2. Leg press com carga média: 4x8-10\n3. Supino máquina: 4x8-10\n4. Pulldown: 4x10\n5. Desenvolvimento com halteres sentado: 3x12\n6. Aeróbico: 20 minutos em bicicleta\n7. Alongamento: quadris, coluna e ombros\n");
+                } else if (strcmp(categoria, "Comorbidade") == 0) {
+                    strcpy(atual->saude.treino, "Treino_Avançado_Comorbidades:\n1. Aquecimento: 10 minutos de caminhada leve\n2. Agachamento na máquina com carga moderada: 3x8-10\n3. Supino com halteres: 3x8\n4. Pulldown: 3x8-10\n5. Prancha modificada: 3x20 segundos\n6. Aeróbico: 20 minutos de bicicleta ou caminhada\n7. Alongamento: alongamentos suaves\n");
+                }
+            }
+
+            printf("Treino atribuído com sucesso!\n");
+            return;
+        }
+        atual = atual->prox;
+    }
+    printf("Aluno não encontrado.\n");
+}
+
+// Funo para exibir o menu de opes
 void exibir_menu() {
     printf("\n----------- Painel de Serviços -----------\n");
-    printf("1. Matrícula\n");
+    printf("1. Matricular\n");
     printf("2. Checar ficha do aluno\n");
     printf("3. Atualizar treino\n");
-    printf("4. Remover matrícula\n");
+    printf("4. Remover Matrícula\n");
     printf("0. Sair\n");
     printf("-----------------------------------------\n");
 }
 
+// Funo para carregar a lista de alunos de um arquivo
+Aluno* carregar_dados() {
+    FILE *arquivo = fopen("alunos.txt", "r");
+    if (!arquivo) {
+        printf("Erro ao abrir o arquivo para carregar os dados.\n");
+        return NULL;
+    }
 
+    Aluno *lista = NULL;
+    Aluno *novo;
+    while (1) {
+        novo = (Aluno*) malloc(sizeof(Aluno));
+        if (!novo) {
+            printf("Erro ao alocar memória.\n");
+            fclose(arquivo);
+            return lista;
+        }
+
+        // Ler os dados do aluno
+        if (fgets(novo->dados_pessoais.nome, 50, arquivo) == NULL) break;
+        novo->dados_pessoais.nome[strcspn(novo->dados_pessoais.nome, "\n")] = '\0'; // Remover o '\n' do final
+
+        fscanf(arquivo, " %c\n", &novo->dados_pessoais.sexo);
+        fgets(novo->dados_pessoais.data_nascimento, 11, arquivo);
+        novo->dados_pessoais.data_nascimento[strcspn(novo->dados_pessoais.data_nascimento, "\n")] = '\0';
+        fgets(novo->dados_pessoais.cpf, 15, arquivo);
+        novo->dados_pessoais.cpf[strcspn(novo->dados_pessoais.cpf, "\n")] = '\0';
+        fgets(novo->dados_pessoais.endereco, 100, arquivo);
+        novo->dados_pessoais.endereco[strcspn(novo->dados_pessoais.endereco, "\n")] = '\0';
+        fgets(novo->dados_pessoais.telefone, 20, arquivo);
+        novo->dados_pessoais.telefone[strcspn(novo->dados_pessoais.telefone, "\n")] = '\0';
+        fgets(novo->dados_pessoais.email, 50, arquivo);
+        novo->dados_pessoais.email[strcspn(novo->dados_pessoais.email, "\n")] = '\0';
+        fscanf(arquivo, "%f\n", &novo->saude.peso);
+        fscanf(arquivo, "%f\n", &novo->saude.altura);
+        fscanf(arquivo, "%f\n", &novo->saude.imc);
+        fgets(novo->saude.exames, 200, arquivo);
+        novo->saude.exames[strcspn(novo->saude.exames, "\n")] = '\0';
+        fgets(novo->saude.condicoes_medicas, 200, arquivo);
+        novo->saude.condicoes_medicas[strcspn(novo->saude.condicoes_medicas, "\n")] = '\0';
+        fgets(novo->saude.treino, 200, arquivo);
+        novo->saude.treino[strcspn(novo->saude.treino, "\n")] = '\0';
+        fgets(novo->pagamento.tipo_plano, 20, arquivo);
+        novo->pagamento.tipo_plano[strcspn(novo->pagamento.tipo_plano, "\n")] = '\0';
+        fgets(novo->pagamento.data_inicial, 11, arquivo);
+        novo->pagamento.data_inicial[strcspn(novo->pagamento.data_inicial, "\n")] = '\0';
+        fgets(novo->pagamento.data_final, 11, arquivo);
+        novo->pagamento.data_final[strcspn(novo->pagamento.data_final, "\n")] = '\0';
+
+        // Adiciona o novo aluno  lista
+        novo->prox = lista;
+        lista = novo;
+    }
+
+    fclose(arquivo);
+    printf("Dados carregados com sucesso.\n");
+    return lista;
+}
+
+// Funo para salvar a lista de alunos em um arquivo
+void salvar_dados(Aluno *lista) {
+    FILE *arquivo = fopen("alunos.txt", "w");
+    if (!arquivo) {
+        printf("Erro ao abrir o arquivo para salvar os dados.\n");
+        return;
+    }
+
+    Aluno *atual = lista;
+    while (atual != NULL) {
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.nome);
+        fprintf(arquivo, "%c\n", atual->dados_pessoais.sexo);
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.data_nascimento);
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.cpf);
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.endereco);
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.telefone);
+        fprintf(arquivo, "%s\n", atual->dados_pessoais.email);
+        fprintf(arquivo, "%.2f\n", atual->saude.peso);
+        fprintf(arquivo, "%.2f\n", atual->saude.altura);
+        fprintf(arquivo, "%.2f\n", atual->saude.imc);
+        fprintf(arquivo, "%s\n", atual->saude.exames);
+        fprintf(arquivo, "%s\n", atual->saude.condicoes_medicas);
+        fprintf(arquivo, "%s\n", atual->saude.treino);
+        fprintf(arquivo, "%s\n", atual->pagamento.tipo_plano);
+        fprintf(arquivo, "%s\n", atual->pagamento.data_inicial);
+        fprintf(arquivo, "%s\n", atual->pagamento.data_final);
+        fprintf(arquivo, "\n"); // Adiciona uma linha em branco entre os alunos
+        atual = atual->prox;
+    }
+
+    fclose(arquivo);
+    printf("Dados salvos com sucesso.\n");
+}
 
 
 int main() {
-    setlocale(LC_ALL, "Portuguese"); // Configura o idioma para Português
+
+    setlocale(LC_ALL, "Portuguese"); // Configura o idioma para Portugus
 
     Aluno *lista = NULL;
     int opcao;
@@ -259,20 +413,21 @@ int main() {
                 checar_ficha(lista);
                 break;
             case 3:
-                printf("Funcionalidade de atualizar treino ainda não implementada.\n");
+                atualizar_treino(lista);
                 break;
             case 4:
                 lista = remover_aluno(lista);
                 break;
             case 0:
+                salvar_dados(lista); // Salva os dados ao sair
                 printf("Saindo...\n");
                 break;
             default:
-                printf("Opção inválida.\n");
+                printf("opção inválida.\n");
         }
     } while (opcao != 0);
 
-    // Liberar a memória
+    // Liberar a memria
     Aluno *temp;
     while (lista != NULL) {
         temp = lista;
